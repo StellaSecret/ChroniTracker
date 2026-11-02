@@ -73,5 +73,5 @@ http.createServer((req, res) => {
     });
   });
 }).listen(PORT, () => {
-  console.log(`AsthmeTrack test server running on http://localhost:${PORT}`);
+  console.log(`ChroniTracker test server running on http://localhost:${PORT}`);
 });

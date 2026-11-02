@@ -1,4 +1,4 @@
-# 📱 Guide — AsthmeTrack → APK Android avec Capacitor
+# 📱 Guide — ChroniTracker → APK Android avec Capacitor
 
 ## Pré-requis
 
@@ -51,7 +51,7 @@ npm init -y
 npm install @capacitor/core @capacitor/cli @capacitor/android
 
 # Initialiser Capacitor
-npx cap init AsthmeTrack com.asthmetrack.app --web-dir www
+npx cap init ChroniTracker com.asthmetrack.app --web-dir www
 ```
 
 ---
@@ -181,4 +181,4 @@ asthmetrack/
 
 ---
 
-*AsthmeTrack — Suivi asthme personnel | Généré avec AsthmeTrack v1.0*
+*ChroniTracker — Suivi asthme personnel | Généré avec ChroniTracker v1.0*
