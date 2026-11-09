@@ -39,3 +39,7 @@ stryker-tmp/
 .stryker-tmp/
 stryker-setup-*.js
 work-*/
+
+# ── Coverage ───────────────────────────────
+coverage/
+coverage-e2e/

@@ -12,18 +12,16 @@ const GDRIVE_FILENAME = 'chronictrack_data.json';
 const GDRIVE_LEGACY_FILENAMES = ['asthmetrack_data.json'];
 
 function _driveBackupQuery(fields) {
-  const names = [GDRIVE_FILENAME, ...GDRIVE_LEGACY_FILENAMES].map(n => `name='${n}'`).join(' or ');
-  return `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=(${names})&fields=${fields}`;
+  return driveBackupQuery(fields, GDRIVE_FILENAME, GDRIVE_LEGACY_FILENAMES);
 }
 
 function _pickDriveBackup(files) {
-  if (!Array.isArray(files) || !files.length) return null;
-  return files.find(f => f.name === GDRIVE_FILENAME) || files[0];
+  return pickDriveBackup(files, GDRIVE_FILENAME);
 }
 const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 // Pure business logic (loaded from logic.js). DOM-free, unit-tested, mutation-tested.
-const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis } = window.AsthmeTrackLogic;
+const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis, htnCategory, glucoseFlag, calcDepAvg: depAvg, driveBackupQuery, pickDriveBackup, migrateBackupData } = window.AsthmeTrackLogic;
 
 
 // ══════════════════════════════════════════
@@ -939,9 +937,8 @@ function showToast(msg,type=''){
 // ══════════════════════════════════════════
 function _depFieldId(prefix,n){return prefix?prefix+'Dep'+n:'dep'+n;}
 function calcDepAvg(prefix=''){
-  const vals=[1,2,3].map(n=>{const el=document.getElementById(_depFieldId(prefix,n));return el?parseFloat(el.value):NaN;}).filter(v=>!isNaN(v)&&v>=50&&v<=900);
-  if(!vals.length)return null;
-  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  const vals=[1,2,3].map(n=>{const el=document.getElementById(_depFieldId(prefix,n));return el?parseFloat(el.value):NaN;});
+  return depAvg(vals);
 }
 function calcDepAvgWithWarn(prefix=''){
   const raw=[1,2,3].map(n=>{const el=document.getElementById(_depFieldId(prefix,n));const v=parseFloat(el?el.value:NaN);return{n,v};});
@@ -1152,18 +1149,7 @@ function conditionLabel(id){
   return id;
 }
 function conditionColor(id){ return (id==='hypertension'?'#f97316':id==='diabetes'?'#a78bfa':'#4f9cf9'); }
-function htnCategory(s,d){
-  const def=window.HypertensionCondition; if(def&&def.getCategory) return def.getCategory(s,d);
-  s=Number(s); d=Number(d); if(s>=180||d>=120) return 'crisis'; if(s>=140||d>=90) return 'stage2'; if(s>=130||d>=80) return 'stage1'; if(s>=120&&d<80) return 'elevated'; return 'normal';
-}
 function catLabel(c){ const k='cat_'+c; const v=t(k); return v===k?c:v; }
-function glucoseFlag(g,unit){
-  const mg = unit==='mmol/L' ? Number(g)*18 : Number(g);
-  if(!isFinite(mg)) return '';
-  if(mg<70) return 'low';
-  if(mg>180) return 'high';
-  return 'ok';
-}
 
 let _activeCondition = null;
 function showCondition(id){
@@ -1221,7 +1207,7 @@ function renderDashboard(){
         value = `${d.systolic}/${d.diastolic} mmHg`;
         const cat=htnCategory(d.systolic,d.diastolic);
         sub = `${t('panel_last')}: ${new Date(e.timestamp).toLocaleDateString(t('locale'),{day:'2-digit',month:'short'})}`;
-        meta = `<span class="condition-chip">${escHtml(catLabel(cat))}</span>${d.pulse?`<span class="condition-chip">${d.pulse} bpm</span>`:''}<span class="condition-chip">${conditionEntriesOf('hypertension').length}</span>`;
+        meta = `<span class="condition-chip">${escHtml(catLabel(cat))}</span>${d.pulse?`<span class="condition-chip">${escHtml(d.pulse)} bpm</span>`:''}<span class="condition-chip">${conditionEntriesOf('hypertension').length}</span>`;
       }
     } else if(id==='diabetes'){
       const e=conditionEntriesOf('diabetes')[0]; const d=e&&e.data||{};
@@ -1301,7 +1287,7 @@ function renderHypertensionDetail(cont){
   if(!entries.length){ cont.insertAdjacentHTML('beforeend', `<div class="empty-state"><p>${escHtml(t('panel_no_data'))}</p></div>`); return; }
   const last=entries[0], d=last.data||{}, cat=htnCategory(d.systolic,d.diastolic);
   const card=document.createElement('div');card.className='card';
-  card.innerHTML=`<div class="card-title">${escHtml(t('panel_last'))}</div><div class="condition-panel-value">${d.systolic||'—'}/${d.diastolic||'—'} <span style="font-size:16px;font-weight:600">mmHg</span></div><div class="condition-panel-meta"><span class="condition-chip">${escHtml(catLabel(cat))}</span>${d.pulse?`<span class="condition-chip">${d.pulse} bpm</span>`:''}${d.position?`<span class="condition-chip">${escHtml(d.position)}</span>`:''}</div><div class="condition-panel-sub" style="margin-top:8px">${escHtml(new Date(last.timestamp).toLocaleString(t('locale')))}</div>`;
+  card.innerHTML=`<div class="card-title">${escHtml(t('panel_last'))}</div><div class="condition-panel-value">${escHtml(d.systolic||'—')}/${escHtml(d.diastolic||'—')} <span style="font-size:16px;font-weight:600">mmHg</span></div><div class="condition-panel-meta"><span class="condition-chip">${escHtml(catLabel(cat))}</span>${d.pulse?`<span class="condition-chip">${escHtml(d.pulse)} bpm</span>`:''}${d.position?`<span class="condition-chip">${escHtml(d.position)}</span>`:''}</div><div class="condition-panel-sub" style="margin-top:8px">${escHtml(new Date(last.timestamp).toLocaleString(t('locale')))}</div>`;
   cont.appendChild(card);
   const recent=[...entries].reverse().slice(-14);
   cont.insertAdjacentHTML('beforeend', `<div class="card"><div class="card-title">${escHtml(t('bp_chart'))}</div><div style="display:flex;gap:14px;margin:-4px 0 6px;font-size:11px;color:var(--muted)"><span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:3px;border-radius:2px;background:#f97316;display:inline-block"></i>${escHtml(t('pdf_sys_label'))}</span><span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:3px;border-radius:2px;background:#4f9cf9;display:inline-block"></i>${escHtml(t('pdf_dia_label'))}</span></div><div class="chart-wrap"><canvas id="chartBP"></canvas></div></div>`);
@@ -1311,7 +1297,7 @@ function renderHypertensionDetail(cont){
     {values:recent.map(e=>Number((e.data||{}).diastolic)||0),color:'#4f9cf9',label:t('pdf_dia_label')},
   ]);
   const list=document.createElement('div');list.className='card';list.innerHTML=`<div class="card-title">${escHtml(t('detail_history'))}</div>`;
-  entries.slice(0,10).forEach(e=>{ const x=e.data||{}; const c=htnCategory(x.systolic,x.diastolic); list.insertAdjacentHTML('beforeend', `<div style="padding:8px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px"><div><b>${x.systolic}/${x.diastolic}</b> mmHg ${x.pulse?`• ${x.pulse}`:''}<div style="font-size:12px;color:var(--muted)">${escHtml(catLabel(c))}</div></div><div style="font-size:12px;color:var(--muted);text-align:right">${new Date(e.timestamp).toLocaleDateString(t('locale'))}</div></div>`); });
+  entries.slice(0,10).forEach(e=>{ const x=e.data||{}; const c=htnCategory(x.systolic,x.diastolic); list.insertAdjacentHTML('beforeend', `<div style="padding:8px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px"><div><b>${escHtml(x.systolic)}/${escHtml(x.diastolic)}</b> mmHg ${x.pulse?`• ${escHtml(x.pulse)}`:''}<div style="font-size:12px;color:var(--muted)">${escHtml(catLabel(c))}</div></div><div style="font-size:12px;color:var(--muted);text-align:right">${new Date(e.timestamp).toLocaleDateString(t('locale'))}</div></div>`); });
   cont.appendChild(list);
 }
 
@@ -1323,13 +1309,13 @@ function renderDiabetesDetail(cont){
   if(!entries.length){ cont.insertAdjacentHTML('beforeend', `<div class="empty-state"><p>${escHtml(t('panel_no_data'))}</p></div>`); return; }
   const last=entries[0], d=last.data||{}, fl=glucoseFlag(d.glucose,d.unit);
   const card=document.createElement('div');card.className='card';
-  card.innerHTML=`<div class="card-title">${escHtml(t('panel_last'))}</div><div class="condition-panel-value">${d.glucose||'—'} <span style="font-size:16px;font-weight:600">${escHtml(d.unit||'mg/dL')}</span></div><div class="condition-panel-meta">${fl?`<span class="condition-chip">${escHtml(fl)}</span>`:''}${d.context?`<span class="condition-chip">${escHtml(d.context)}</span>`:''}${d.insulin!=null?`<span class="condition-chip">ins ${d.insulin}</span>`:''}</div><div class="condition-panel-sub" style="margin-top:8px">${escHtml(new Date(last.timestamp).toLocaleString(t('locale')))}</div>`;
+  card.innerHTML=`<div class="card-title">${escHtml(t('panel_last'))}</div><div class="condition-panel-value">${escHtml(d.glucose||'—')} <span style="font-size:16px;font-weight:600">${escHtml(d.unit||'mg/dL')}</span></div><div class="condition-panel-meta">${fl?`<span class="condition-chip">${escHtml(fl)}</span>`:''}${d.context?`<span class="condition-chip">${escHtml(d.context)}</span>`:''}${d.insulin!=null?`<span class="condition-chip">ins ${escHtml(d.insulin)}</span>`:''}</div><div class="condition-panel-sub" style="margin-top:8px">${escHtml(new Date(last.timestamp).toLocaleString(t('locale')))}</div>`;
   cont.appendChild(card);
   const recent=[...entries].reverse().slice(-14);
   cont.insertAdjacentHTML('beforeend', `<div class="card"><div class="card-title">${escHtml(t('glucose_chart'))}</div><div class="chart-wrap"><canvas id="chartGlucose"></canvas></div></div>`);
   drawLineChart('chartGlucose',recent.map(e=>{const dt=new Date(e.timestamp);return dt.getDate()+'/'+(dt.getMonth()+1);}),recent.map(e=>(e.data||{}).glucose||0),'#a78bfa');
   const list=document.createElement('div');list.className='card';list.innerHTML=`<div class="card-title">${escHtml(t('detail_history'))}</div>`;
-  entries.slice(0,10).forEach(e=>{ const x=e.data||{}; list.insertAdjacentHTML('beforeend', `<div style="padding:8px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px"><div><b>${x.glucose}</b> ${escHtml(x.unit||'mg/dL')} ${x.context?`• ${escHtml(x.context)}`:''}</div><div style="font-size:12px;color:var(--muted);text-align:right">${new Date(e.timestamp).toLocaleDateString(t('locale'))}</div></div>`); });
+  entries.slice(0,10).forEach(e=>{ const x=e.data||{}; list.insertAdjacentHTML('beforeend', `<div style="padding:8px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px"><div><b>${escHtml(x.glucose)}</b> ${escHtml(x.unit||'mg/dL')} ${x.context?`• ${escHtml(x.context)}`:''}</div><div style="font-size:12px;color:var(--muted);text-align:right">${new Date(e.timestamp).toLocaleDateString(t('locale'))}</div></div>`); });
   cont.appendChild(list);
 }
 
@@ -2136,52 +2122,6 @@ function setSync(on) {
 }
 
 function checkOAuthRedirect() { /* plus utilisé — géré nativement par le plugin */ }
-
-// ══════════════════════════════════════════
-//  BACKUP MIGRATION (v1/v2 → v3)
-// ══════════════════════════════════════════
-function migrateLegacyMeasures(measures){
-  return (measures||[]).map(x=>({
-    id: x.id || (Date.now().toString(36)+secureRandom().toString(36).slice(2,6)),
-    conditionId: 'asthma',
-    type: 'measure',
-    timestamp: x.dt || new Date().toISOString(),
-    data: {
-      dep: x.dep,
-      dep1: x.dep1,
-      dep2: x.dep2,
-      dep3: x.dep3,
-      spo2: x.spo2,
-      easyhaler: x.easy,
-      comment: x.comment
-    },
-    meta: { migratedFrom: 'asthma' }
-  }));
-}
-
-/** Normalizes any backup schema (v1/v2/v3 or Drive) into the current v3 shape. */
-function migrateBackupData(data){
-  if(!data || typeof data !== 'object') return data;
-  if(!Array.isArray(data.measures)) data.measures = [];
-  if(!data.version) data.version = 1;
-  if(data.version < 3){
-    // Old backups only have `measures`; synthesize v3 collections.
-    if((!Array.isArray(data.conditionEntries) || data.conditionEntries.length===0) && data.measures.length>0){
-      data.conditionEntries = migrateLegacyMeasures(data.measures);
-    }
-    if(!data.conditions) data.conditions = { enabled: ['asthma','hypertension','diabetes'] };
-    if(!Array.isArray(data.medications)) data.medications = [];
-    // Legacy default was asthma-only; match DB.load's upgrade unless the user customized it.
-    if(data.conditions && Array.isArray(data.conditions.enabled) && !data.conditions.custom && data.conditions.enabled.length===1 && data.conditions.enabled[0]==='asthma'){
-      data.conditions = { enabled: ['asthma','hypertension','diabetes'] };
-    }
-    data.version = 3;
-  }
-  if(!Array.isArray(data.conditionEntries)) data.conditionEntries = [];
-  if(!data.conditions) data.conditions = { enabled: ['asthma','hypertension','diabetes'] };
-  if(!Array.isArray(data.medications)) data.medications = [];
-  return data;
-}
 
 // ══════════════════════════════════════════
 //  JSON EXPORT / IMPORT

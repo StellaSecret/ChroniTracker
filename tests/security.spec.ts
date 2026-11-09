@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { seedMeasures, seedReminders, seedBestDEP, goToTab, fakeMeasure, waitForToast } from './helpers';
+import { test, expect } from './fixtures';
+import { seedMeasures, seedReminders, seedBestDEP, seedConditionEntries, seedMedications, goToTab, fakeMeasure, waitForToast } from './helpers';
 
 // ──────────────────────────────────────────────────────────────────────────────
 //  Shared XSS payload
@@ -129,7 +129,7 @@ test.describe('Token storage (#9)', () => {
     await page.addInitScript(() => { (window as any).__savedKey = undefined; });
     await page.goto('/app/app.html');
     await page.exposeFunction('__trackSave', (key: string, value: string) => {
-      (global as any).__savedKey = key; // this is for the test node process
+      (globalThis as any).__savedKey = key; // this is for the test node process
     });
     // Need to set tracker on window
     await page.evaluate(() => {
@@ -447,3 +447,58 @@ test.describe('CSP does not include api.anthropic.com (fix 4)', () => {
   });
 
   });
+
+
+// ──────────────────────────────────────────────────────────────────────────────
+//  Condition detail renderers — HTN / diabetes fields must be escaped
+// ──────────────────────────────────────────────────────────────────────────────
+test.describe('XSS — condition entry fields (#17 #18)', () => {
+
+  test('hypertension values, position and comment are escaped in the detail view', async ({ page }) => {
+    await seedConditionEntries(page, [{
+      id: 'xss-bp', conditionId: 'hypertension', type: 'reading', timestamp: new Date().toISOString(),
+      data: { systolic: XSS, diastolic: XSS, pulse: XSS, position: XSS, comment: XSS },
+    }]);
+    await page.goto('/app/app.html');
+    await page.locator('[data-action="showCondition"][data-val="hypertension"]').click();
+    await page.waitForSelector('#conditionDetail .card');
+    await expect(page.locator('#conditionDetail')).toContainText('<img');
+    expect(await xssExecuted(page)).toBe(false);
+  });
+
+  test('diabetes values, context, insulin and comment are escaped in the detail view', async ({ page }) => {
+    await seedConditionEntries(page, [{
+      id: 'xss-dm', conditionId: 'diabetes', type: 'reading', timestamp: new Date().toISOString(),
+      data: { glucose: XSS, unit: XSS, context: XSS, insulin: XSS, comment: XSS, meals: XSS },
+    }]);
+    await page.goto('/app/app.html');
+    await page.locator('[data-action="showCondition"][data-val="diabetes"]').click();
+    await page.waitForSelector('#conditionDetail .card');
+    await expect(page.locator('#conditionDetail')).toContainText('<img');
+    expect(await xssExecuted(page)).toBe(false);
+  });
+
+  test('condition fields are escaped on the dashboard panels', async ({ page }) => {
+    await seedConditionEntries(page, [
+      {
+        id: 'xss-bp', conditionId: 'hypertension', type: 'reading', timestamp: new Date().toISOString(),
+        data: { systolic: XSS, diastolic: XSS, pulse: XSS, position: XSS },
+      },
+      {
+        id: 'xss-dm', conditionId: 'diabetes', type: 'reading', timestamp: new Date().toISOString(),
+        data: { glucose: XSS, unit: XSS, context: XSS },
+      },
+    ]);
+    await page.goto('/app/app.html');
+    await expect(page.locator('#dashboardContent')).toContainText('<img');
+    expect(await xssExecuted(page)).toBe(false);
+  });
+
+  test('medication fields are escaped in the medication list', async ({ page }) => {
+    await seedMedications(page, [{ id: 'm-xss', name: XSS, dose: XSS, freq: XSS, conditionId: XSS, active: true }]);
+    await page.goto('/app/app.html');
+    await goToTab(page, 'medications');
+    await expect(page.locator('#medList')).toContainText('<img');
+    expect(await xssExecuted(page)).toBe(false);
+  });
+});

@@ -4,7 +4,7 @@
  * crisis banner, trend arrows, zone logic, offline banner,
  * and chart rendering smoke test.
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { seedMeasures, seedBestDEP, fakeMeasure } from './helpers';
 
 test.describe('Crisis banner', () => {
