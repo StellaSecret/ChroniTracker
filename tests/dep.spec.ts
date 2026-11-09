@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { goToTab, seedBestDEP, waitForToast } from './helpers';
 
 test.describe('DEP — calcul de la moyenne', () => {

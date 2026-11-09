@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import {
   seedMeasures, seedBestDEP, seedReminders, seedProfile,
   seedLang, seedTheme, seedFont,

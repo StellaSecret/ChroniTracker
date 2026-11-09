@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { seedMeasures, seedBestDEP, seedConditionEntries, goToTab, fakeMeasure, clearIDB } from './helpers';
 import path from 'path';
 import fs from 'fs';

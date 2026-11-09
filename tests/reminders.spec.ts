@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { seedReminders, goToTab, waitForToast, readFromIDB, clearIDB } from './helpers';
 
 test.beforeEach(async ({ page }, testInfo) => {

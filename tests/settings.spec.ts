@@ -4,7 +4,7 @@
  * bestDEP calibration, clearAll, JSON export/import, CSV export,
  * theme toggle, language switch, and profile/predicted DEP modal.
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { seedMeasures, seedBestDEP, goToTab, fakeMeasure, waitForToast, readFromIDB, clearIDB } from './helpers';
 
 test.beforeEach(async ({ page }, testInfo) => {
@@ -92,28 +92,17 @@ test.describe('JSON export / import', () => {
       version: 2,
     };
 
-    // Inject importJSON to use a pre-built File blob instead of the file picker
-    await page.evaluate(async (backupData) => {
-      const json = JSON.stringify(backupData);
-      const file = new File([json], 'test_backup.json', { type: 'application/json' });
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      // Create the input, inject file, and fire the change event manually
-      const input = document.createElement('input');
-      input.type = 'file';
-      Object.defineProperty(input, 'files', { value: dt.files });
-      // Trigger the onchange handler directly
-      const event = new Event('change');
-      Object.defineProperty(event, 'target', { value: input });
-      // Call the function directly since we can't intercept the picker
-      const text = json;
-      const data = JSON.parse(text);
-      if (Array.isArray(data.measures)) {
-        (window as any).DB.measures = data.measures;
-        if (data.bestDEP) (window as any).DB.bestDEP = data.bestDEP;
-        (window as any).showToast(`✓ ${data.measures.length} mesures importées`);
-      }
-    }, backup);
+    // Drive the real file picker + File API instead of poking DB directly
+    const [chooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.locator('button[data-action="importJSON"]').click(),
+    ]);
+    await chooser.setFiles({
+      name: 'test_backup.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
+    await waitForToast(page);
 
     const measures = JSON.parse(await readFromIDB(page, 'at_measures') || '[]');
     expect(measures).toHaveLength(2);

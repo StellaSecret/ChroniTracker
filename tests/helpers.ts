@@ -17,7 +17,7 @@ async function writeToIDB(page: Page, key: string, value: any) {
   await ensureOrigin(page);
   const dbName = await page.evaluate(() => localStorage.getItem('__TEST_DB_NAME__') || 'ChroniTrackDB');
   await page.evaluate(async ({ key, value, dbName }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const req = indexedDB.open(dbName, 1);
       req.onupgradeneeded = () => req.result.createObjectStore('kv');
       req.onsuccess = () => {
@@ -37,7 +37,7 @@ export async function clearIDB(page: Page, name?: string) {
   await ensureOrigin(page);
   const dbName = name || await page.evaluate(() => localStorage.getItem('__TEST_DB_NAME__') || 'ChroniTrackDB');
   await page.evaluate(async (name) => {
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const req = indexedDB.open(name, 1);
       req.onupgradeneeded = () => req.result.createObjectStore('kv');
       req.onsuccess = () => {
@@ -59,7 +59,7 @@ export async function readFromIDB(page: Page, key: string): Promise<any> {
   await ensureOrigin(page);
   const dbName = await page.evaluate(() => localStorage.getItem('__TEST_DB_NAME__') || 'ChroniTrackDB');
   return await page.evaluate(async ({ k, name }) => {
-    return new Promise((resolve) => {
+    return new Promise<any>((resolve) => {
       const req = indexedDB.open(name, 1);
       req.onupgradeneeded = () => req.result.createObjectStore('kv'); // Ensure store exists
       req.onsuccess = () => {
@@ -88,9 +88,20 @@ export async function seedReminders(page: Page, reminders: object[]) {
   await writeToIDB(page, 'at_reminders', JSON.stringify(reminders));
 }
 
+/** Injects medications into IndexedDB. */
+export async function seedMedications(page: Page, medications: object[]) {
+  await writeToIDB(page, 'at_medications', JSON.stringify(medications));
+}
+
 /** Injects condition entries into IndexedDB. */
 export async function seedConditionEntries(page: Page, entries: object[]) {
   await writeToIDB(page, 'at_conditionEntries', JSON.stringify(entries));
+}
+
+/** Injects a (valid, non-expired) Google Drive OAuth token. */
+export async function seedDriveToken(page: Page, token = 'test-drive-token', expiryMs = Date.now() + 3600_000) {
+  await writeToIDB(page, 'at_driveToken', token);
+  await writeToIDB(page, 'at_driveTokenExpiry', String(expiryMs));
 }
 
 /** Injects personal best DEP. */
@@ -182,6 +193,8 @@ export async function waitForToast(page: Page): Promise<string> {
 //  FACTORIES
 // ─────────────────────────────────────────────────────────────────────────────
 
+let _fakeMeasureSeq = 0;
+
 /** Returns a fake measure with sensible defaults, overridable per field. */
 export function fakeMeasure(overrides: Partial<{
   id: number; dt: string;
@@ -189,7 +202,7 @@ export function fakeMeasure(overrides: Partial<{
   spo2: number; easy: number; comment: string;
 }> = {}) {
   return {
-    id: Date.now() + Math.random(),
+    id: Date.now() + (++_fakeMeasureSeq),
     dt: '2025-01-15T08:00',
     dep: 400, dep1: 400, dep2: 400, dep3: 400,
     spo2: 97, easy: 1, comment: '',
