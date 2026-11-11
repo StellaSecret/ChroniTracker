@@ -310,7 +310,7 @@ jobs:
 
       - name: Decode keystore
         if: env.HAS_SIGNING_SECRETS == 'true'
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/asthmetrack-release.jks
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/chronitracker-release.jks
 
       - name: Build signed Bundle & APK (release)
         if: env.HAS_SIGNING_SECRETS == 'true'
@@ -320,7 +320,7 @@ jobs:
           VCODE=$((28 + ${{ github.run_number }}))
           sed -i "s/versionCode .*/versionCode $VCODE/" app/build.gradle
           ./gradlew bundleRelease assembleRelease \
-            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/android/app/asthmetrack-release.jks \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/android/app/chronitracker-release.jks \
             -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" --no-daemon

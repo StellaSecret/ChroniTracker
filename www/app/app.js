@@ -8,7 +8,7 @@
 // Never commit a real Client ID here. Keep __GOOGLE_CLIENT_ID__ as the placeholder.
 const GOOGLE_CLIENT_ID = '__GOOGLE_CLIENT_ID__';
 const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email';
-const GDRIVE_FILENAME = 'chronictrack_data.json';
+const GDRIVE_FILENAME = 'chronitracker_data.json';
 const GDRIVE_LEGACY_FILENAMES = ['asthmetrack_data.json'];
 
 function _driveBackupQuery(fields) {
@@ -21,7 +21,7 @@ function _pickDriveBackup(files) {
 const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 // Pure business logic (loaded from logic.js). DOM-free, unit-tested, mutation-tested.
-const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis, htnCategory, glucoseFlag, calcDepAvg: depAvg, driveBackupQuery, pickDriveBackup, migrateBackupData } = window.AsthmeTrackLogic;
+const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis, htnCategory, glucoseFlag, calcDepAvg: depAvg, driveBackupQuery, pickDriveBackup, migrateBackupData } = window.ChroniTrackLogic;
 
 
 // ══════════════════════════════════════════
@@ -2129,7 +2129,7 @@ function checkOAuthRedirect() { /* plus utilisé — géré nativement par le pl
 async function exportJSON() {
   const payload = { measures: DB.measures, bestDEP: DB.bestDEP, reminders: DB.reminders, profile: DB.profile, conditions: DB.conditions, conditionEntries: DB.conditionEntries, medications: DB.medications, version: 3 };
   const jsonStr = JSON.stringify(payload, null, 2);
-  const filename = 'chronictrack_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  const filename = 'chronitracker_backup_' + new Date().toISOString().slice(0,10) + '.json';
 
   if (IS_CAPACITOR) {
     // Native: write to Documents via @capacitor/filesystem then share

@@ -758,7 +758,7 @@ test.describe('JSON export / import', () => {
       page.waitForEvent('download'),
       page.locator('[data-action="exportJSON"]').click(),
     ]);
-    expect(download.suggestedFilename()).toMatch(/chronictrack_backup.*\.json/);
+    expect(download.suggestedFilename()).toMatch(/chronitracker_backup.*\.json/);
   });
 
   test('exported JSON contains measures and profile', async ({ page }) => {

@@ -36,7 +36,7 @@ test.describe('JSON export', () => {
       page.waitForEvent('download'),
       page.locator('button[data-action="exportJSON"]').click(),
     ]);
-    expect(download.suggestedFilename()).toMatch(/^chronictrack_backup_\d{4}-\d{2}-\d{2}\.json$/);
+    expect(download.suggestedFilename()).toMatch(/^chronitracker_backup_\d{4}-\d{2}-\d{2}\.json$/);
     const filePath = await download.path();
     const raw = await fs.readFile(filePath, 'utf8');
     const data = JSON.parse(raw);

@@ -91,10 +91,11 @@ describe('calcDepAvg', () => {
 
 describe('driveBackupQuery', () => {
   it('includes primary and legacy filenames', () => {
-    const q = driveBackupQuery('files(id,name)', 'chronictrack_data.json', ['asthmetrack_data.json']);
-    expect(q).toContain("name='chronictrack_data.json'");
+    const q = driveBackupQuery('files(id,name)', 'chronitracker_data.json', ['asthmetrack_data.json', 'chronictrack_data.json']);
+    expect(q).toContain("name='chronitracker_data.json'");
     expect(q).toContain("name='asthmetrack_data.json'");
-    expect(q).toContain("name='chronictrack_data.json' or name='asthmetrack_data.json'");
+    expect(q).toContain("name='chronictrack_data.json'");
+    expect(q).toContain("name='chronitracker_data.json' or name='asthmetrack_data.json' or name='chronictrack_data.json'");
     expect(q).toContain('spaces=appDataFolder');
     expect(q).toContain('fields=files(id,name)');
   });
@@ -106,13 +107,13 @@ describe('driveBackupQuery', () => {
 
 describe('pickDriveBackup', () => {
   it('prefers the current filename over legacy / other files', () => {
-    const files = [{ id: '1', name: 'other.json' }, { id: '2', name: 'chronictrack_data.json' }];
-    expect(pickDriveBackup(files, 'chronictrack_data.json')).toEqual(files[1]);
+    const files = [{ id: '1', name: 'other.json' }, { id: '2', name: 'chronitracker_data.json' }];
+    expect(pickDriveBackup(files, 'chronitracker_data.json')).toEqual(files[1]);
   });
 
   it('falls back to the first file', () => {
     const files = [{ id: '1', name: 'asthmetrack_data.json' }];
-    expect(pickDriveBackup(files, 'chronictrack_data.json')).toEqual(files[0]);
+    expect(pickDriveBackup(files, 'chronitracker_data.json')).toEqual(files[0]);
   });
 
   it('returns null for empty/invalid input', () => {

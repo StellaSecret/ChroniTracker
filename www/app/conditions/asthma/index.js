@@ -1,7 +1,7 @@
 // Asthma condition definition
 (function(root, factory){
-  if(typeof module==='object' && module.exports){ module.exports = factory(root.ConditionRegistry, root.AsthmeTrackLogic); }
-  else { root.AsthmaCondition = factory(root.ConditionRegistry, root.AsthmeTrackLogic); }
+  if(typeof module==='object' && module.exports){ module.exports = factory(root.ConditionRegistry, root.ChroniTrackLogic); }
+  else { root.AsthmaCondition = factory(root.ConditionRegistry, root.ChroniTrackLogic); }
 })(typeof self!=='undefined'?self:this, function(Registry, Logic){
   const def = {
     id: 'asthma',

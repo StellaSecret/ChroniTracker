@@ -43,7 +43,7 @@ test.describe('Drive upload', () => {
     expect(requests).toHaveLength(1);
     expect(requests[0].method).toBe('POST');
     expect(requests[0].url).toContain('/upload/drive/v3/files?uploadType=multipart');
-    expect(requests[0].body).toContain('chronictrack_data.json');
+    expect(requests[0].body).toContain('chronitracker_data.json');
     expect(requests[0].body).toContain('appDataFolder');
     expect(requests[0].body).toContain('"version":3');
   });
@@ -108,7 +108,7 @@ test.describe('Drive restore', () => {
           },
         };
       }
-      return { status: 200, body: { files: [{ id: 'remote-id', name: 'chronictrack_data.json' }, { id: 'legacy', name: 'asthmetrack_data.json' }] } };
+      return { status: 200, body: { files: [{ id: 'remote-id', name: 'chronitracker_data.json' }, { id: 'legacy', name: 'asthmetrack_data.json' }] } };
     });
     await page.evaluate(() => (window as any).driveSyncDown());
     await expect(page.locator('#toast.show')).toContainText('Drive');
@@ -121,7 +121,7 @@ test.describe('Drive restore', () => {
     expect(entries).toHaveLength(1);
     expect(entries[0].conditionId).toBe('asthma');
     const query = decodeURIComponent(requests[0].url);
-    expect(query).toContain("name='chronictrack_data.json'");
+    expect(query).toContain("name='chronitracker_data.json'");
     expect(query).toContain("name='asthmetrack_data.json'");
     expect(requests.some((r) => r.url.includes('/files/remote-id?alt=media'))).toBe(true);
   });
@@ -132,7 +132,7 @@ test.describe('Drive restore', () => {
       if (req.url.includes('alt=media')) return { status: 200, body: { version: 3, measures: [] } };
       return {
         status: 200,
-        body: { files: [{ id: 'legacy-id', name: 'asthmetrack_data.json' }, { id: 'current-id', name: 'chronictrack_data.json' }] },
+        body: { files: [{ id: 'legacy-id', name: 'asthmetrack_data.json' }, { id: 'current-id', name: 'chronitracker_data.json' }] },
       };
     });
     await page.evaluate(() => (window as any).driveSyncDown());

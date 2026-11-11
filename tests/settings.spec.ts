@@ -76,7 +76,7 @@ test.describe('JSON export / import', () => {
       page.waitForEvent('download'),
       page.locator('button[data-action="exportJSON"]').click(),
     ]);
-    expect(download.suggestedFilename()).toMatch(/^chronictrack_backup_\d{4}-\d{2}-\d{2}\.json$/);
+    expect(download.suggestedFilename()).toMatch(/^chronitracker_backup_\d{4}-\d{2}-\d{2}\.json$/);
   });
 
   test('imported JSON replaces measures and shows toast', async ({ page }) => {

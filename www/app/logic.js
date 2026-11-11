@@ -8,7 +8,7 @@
   if (typeof module === 'object' && module.exports) {
     module.exports = factory();
   } else {
-    root.AsthmeTrackLogic = factory();
+    root.ChroniTrackLogic = factory();
   }
 })(typeof self !== 'undefined' ? self : this, function () {
   // Consecutive red-zone readings required to trigger a crisis banner.
