@@ -283,11 +283,11 @@
     <p class="hero-eyebrow" data-i18n="hero_eyebrow">Asthme · Hypertension · Diabète</p>
     <h1 class="hero-title" data-i18n="hero_title">Suivez ce qui <em>compte vraiment</em></h1>
     <p class="hero-sub" data-i18n="hero_sub">
-      DEP, SpO₂, prises de traitement — tout dans une même vue.
+      DEP, SpO₂, tension artérielle, glycémie et traitements — tout dans une même vue.
       Vos données restent les vôtres : sauvegardées sur votre Google Drive, jamais sur nos serveurs.
     </p>
     <div class="hero-cta">
-      <a href="app/app.html" class="btn-primary">🫁 Commencer le suivi</a>
+      <a href="app/app.html" class="btn-primary">📊 Commencer le suivi</a>
       <a href="app/app.html?demo=true" class="btn-ghost">Voir une démo →</a>
       <a class="play-badge" href="https://play.google.com/store/apps/details?id=com.stellasecret.asthmetrack" target="_blank" rel="noopener">
         <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
@@ -295,9 +295,9 @@
     </div>
   </div>
 
-  <!-- Mini DEP preview card -->
+  <!-- Multi-condition preview card -->
   <div class="hero-visual">
-    <div class="hv-label" data-i18n="hv_label">Mesure du 15 juin — matin</div>
+    <div class="hv-label" data-i18n="hv_label">Aujourd'hui — toutes conditions</div>
 
     <div class="hv-metric-row">
       <span class="hv-metric-val">87%</span>
@@ -317,7 +317,15 @@
       <span class="hv-spo2-label" data-i18n="hv_spo2">SpO₂</span>
       <span class="hv-spo2-val">97%</span>
     </div>
-    <div class="hv-status" data-i18n="hv_status">✓ Moyenne DEP : 438 L/min — stable depuis 7 jours</div>
+    <div class="hv-spo2-row" style="margin-top:0.5rem">
+      <span class="hv-spo2-label" data-i18n="hv_bp">Tension</span>
+      <span class="hv-spo2-val">128/82</span>
+    </div>
+    <div class="hv-spo2-row" style="margin-top:0.5rem">
+      <span class="hv-spo2-label" data-i18n="hv_glucose">Glycémie</span>
+      <span class="hv-spo2-val">1.05 g/L</span>
+    </div>
+    <div class="hv-status" data-i18n="hv_status">✓ DEP 438 L/min · Tension 128/82 · Glycémie 1.05 g/L — stables depuis 7 jours</div>
   </div>
 </section>
 
@@ -330,17 +338,17 @@
     <div class="step">
       <p class="step-num">01</p>
       <h3 data-i18n="step1_title">Saisissez vos mesures</h3>
-      <p data-i18n="step1_sub">DEP en 3 souffles, SpO₂, et nombre de prises d'Easyhaler. La moyenne DEP est calculée automatiquement.</p>
+      <p data-i18n="step1_sub">DEP en 3 souffles, SpO₂, tension artérielle, glycémie et prises de traitement. Les moyennes sont calculées automatiquement.</p>
     </div>
     <div class="step">
       <p class="step-num">02</p>
       <h3 data-i18n="step2_title">Visualisez votre évolution</h3>
-      <p data-i18n="step2_sub">Tableau de bord avec graphiques de tendances. Identifiez d'un coup d'œil les jours difficiles.</p>
+      <p data-i18n="step2_sub">Tableau de bord avec graphiques de tendances par condition. Identifiez d'un coup d'œil les jours difficiles.</p>
     </div>
     <div class="step">
       <p class="step-num">03</p>
-      <h3 data-i18n="step3_title">Comparez à votre DEP théorique</h3>
-      <p data-i18n="step3_sub">Entrez votre profil (âge, sexe, taille). L'app calcule votre valeur de référence et affiche votre zone du jour.</p>
+      <h3 data-i18n="step3_title">Comparez à vos valeurs de référence</h3>
+      <p data-i18n="step3_sub">Entrez votre profil (âge, sexe, taille). L'app calcule votre DEP théorique et affiche les zones et seuils de chaque condition.</p>
     </div>
     <div class="step">
       <p class="step-num">04</p>
@@ -357,13 +365,13 @@
     <div class="features-grid">
       <div class="feature">
         <div class="feature-icon">💨</div>
-        <h3 data-i18n="feat1_title">DEP sur 3 souffles</h3>
-        <p data-i18n="feat1_sub">Saisissez chaque souffle individuellement. La meilleure valeur et la moyenne sont calculées en temps réel.</p>
+        <h3 data-i18n="feat1_title">Suivi multi-conditions</h3>
+        <p data-i18n="feat1_sub">Asthme, hypertension et diabète réunis dans une seule app. Chaque condition garde ses propres mesures et son historique.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">🩺</div>
-        <h3 data-i18n="feat2_title">Zones de trafic colorées</h3>
-        <p data-i18n="feat2_sub">Vert, jaune, rouge — selon votre DEP théorique. Un regard suffit pour évaluer votre état du jour.</p>
+        <h3 data-i18n="feat2_title">Zones et seuils colorés</h3>
+        <p data-i18n="feat2_sub">Vert, jaune, rouge — selon votre DEP théorique, votre tension ou votre glycémie. Un regard suffit pour évaluer votre état du jour.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">☁️</div>
@@ -394,40 +402,43 @@
   <p class="section-eyebrow" data-i18n="metrics_eyebrow">Mesures suivies</p>
   <div class="metrics-grid">
     <div class="metric-card">
-      <h3 data-i18n="m1_title">💨 Débit expiratoire de pointe (DEP)</h3>
-      <p data-i18n="m1_sub">Mesurez votre DEP en 3 souffles consécutifs. Comparez au fil du temps avec votre valeur théorique calculée selon votre profil.</p>
+      <h3 data-i18n="m1_title">💨 Asthme — DEP &amp; SpO₂</h3>
+      <p data-i18n="m1_sub">Mesurez votre DEP en 3 souffles consécutifs et votre SpO₂. Comparez au fil du temps avec votre valeur théorique calculée selon votre profil.</p>
       <div class="metric-tags">
         <span class="tag">3 souffles</span>
-        <span class="tag">Moyenne auto</span>
+        <span class="tag">SpO₂</span>
         <span class="tag">Zones colorées</span>
         <span class="tag">Tendance graphique</span>
       </div>
     </div>
     <div class="metric-card">
-      <h3 data-i18n="m2_title">🩸 Oxymétrie de pouls (SpO₂)</h3>
-      <p data-i18n="m2_sub">Suivez votre saturation en oxygène mesure par mesure. Alertes visuelles si la valeur sort des limites normales (70–100%).</p>
+      <h3 data-i18n="m2_title">🩺 Hypertension — Tension artérielle</h3>
+      <p data-i18n="m2_sub">Enregistrez systolique, diastolique, pouls et position. Suivez l'évolution et repérez les valeurs hors seuils.</p>
       <div class="metric-tags">
-        <span class="tag">Saisie rapide</span>
-        <span class="tag">Alerte hors limites</span>
-        <span class="tag">Historique complet</span>
+        <span class="tag">Systolique / Diastolique</span>
+        <span class="tag">Pouls</span>
+        <span class="tag">Position</span>
+        <span class="tag">Alertes seuils</span>
       </div>
     </div>
     <div class="metric-card">
-      <h3 data-i18n="m3_title">💊 Prises de traitement</h3>
-      <p data-i18n="m3_sub">Enregistrez vos prises d'Easyhaler au quotidien de 0 à 5. Identifiez les jours de forte utilisation dans votre historique.</p>
+      <h3 data-i18n="m3_title">🩸 Diabète — Glycémie</h3>
+      <p data-i18n="m3_sub">Suivez votre glycémie en mg/dL ou mmol/L, avec contexte et insuline. Visualisez les tendances au fil du temps.</p>
       <div class="metric-tags">
-        <span class="tag">0–5 prises/jour</span>
-        <span class="tag">Easyhaler</span>
-        <span class="tag">Visible dans l'historique</span>
+        <span class="tag">mg/dL · mmol/L</span>
+        <span class="tag">À jeun / postprandial</span>
+        <span class="tag">Insuline</span>
+        <span class="tag">Tendances</span>
       </div>
     </div>
     <div class="metric-card">
-      <h3 data-i18n="m4_title">📝 Commentaires libres</h3>
-      <p data-i18n="m4_sub">Notez les symptômes, le contexte ou la météo à chaque mesure. Jusqu'à 500 caractères pour un suivi précis.</p>
+      <h3 data-i18n="m4_title">💊 Traitements &amp; notes</h3>
+      <p data-i18n="m4_sub">Gérez vos médicaments par condition et ajoutez un commentaire à chaque mesure pour un suivi précis.</p>
       <div class="metric-tags">
-        <span class="tag">Symptômes</span>
-        <span class="tag">Contexte</span>
-        <span class="tag">Météo</span>
+        <span class="tag">Médicaments</span>
+        <span class="tag">Observance</span>
+        <span class="tag">Commentaires</span>
+        <span class="tag">Export PDF</span>
       </div>
     </div>
   </div>
@@ -448,7 +459,7 @@
   <h2 data-i18n="cta_title">Prêt à reprendre le contrôle ?</h2>
   <p data-i18n="cta_sub">Gratuit. Sans compte. Fonctionne dans votre navigateur dès maintenant.</p>
   <div class="cta-buttons">
-    <a href="app/app.html" class="btn-primary" data-i18n="nav_app">🫁 Commencer le suivi</a>
+    <a href="app/app.html" class="btn-primary" data-i18n="nav_app">📊 Commencer le suivi</a>
     <a href="app/app.html?demo=true" class="btn-ghost" data-i18n="nav_demo">Voir la démo d'abord</a>
     <a class="play-badge" href="https://play.google.com/store/apps/details?id=com.stellasecret.asthmetrack" target="_blank" rel="noopener">
       <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
@@ -477,59 +488,61 @@ document.addEventListener('DOMContentLoaded', () => {
       nav_home: "Accueil", nav_demo: "Démo", nav_privacy: "Privacy", nav_app: "Lancer l'app",
       hero_eyebrow: "Asthme · Hypertension · Diabète",
       hero_title: "Suivez ce qui <em>compte vraiment</em>",
-      hero_sub: "DEP, SpO₂, prises de traitement — tout dans une même vue. Vos données restent les vôtres : sauvegardées sur votre Google Drive, jamais sur nos serveurs.",
+      hero_sub: "DEP, SpO₂, tension artérielle, glycémie et traitements — tout dans une même vue. Vos données restent les vôtres : sauvegardées sur votre Google Drive, jamais sur nos serveurs.",
       how_eyebrow: "Comment ça marche",
-      step1_title: "Saisissez vos mesures", step1_sub: "DEP en 3 souffles, SpO₂, et nombre de prises d'Easyhaler. La moyenne DEP est calculée automatiquement.",
-      step2_title: "Visualisez votre évolution", step2_sub: "Tableau de bord avec graphiques de tendances. Identifiez d'un coup d'œil les jours difficiles.",
-      step3_title: "Comparez à votre DEP théorique", step3_sub: "Entrez votre profil (âge, sexe, taille). L'app calcule votre valeur de référence et affiche votre zone du jour.",
+      step1_title: "Saisissez vos mesures", step1_sub: "DEP en 3 souffles, SpO₂, tension artérielle, glycémie et prises de traitement. Les moyennes sont calculées automatiquement.",
+      step2_title: "Visualisez votre évolution", step2_sub: "Tableau de bord avec graphiques de tendances par condition. Identifiez d'un coup d'œil les jours difficiles.",
+      step3_title: "Comparez à vos valeurs de référence", step3_sub: "Entrez votre profil (âge, sexe, taille). L'app calcule votre DEP théorique et affiche les zones et seuils de chaque condition.",
       step4_title: "Exportez en PDF", step4_sub: "Générez un rapport complet de votre historique pour le partager avec votre médecin.",
       feat_eyebrow: "Ce qui rend ChroniTracker différent",
-      feat1_title: "DEP sur 3 souffles", feat1_sub: "Saisissez chaque souffle individuellement. La meilleure valeur et la moyenne sont calculées en temps réel.",
-      feat2_title: "Zones de trafic colorées", feat2_sub: "Vert, jaune, rouge — selon votre DEP théorique. Un regard suffit pour évaluer votre état du jour.",
+      feat1_title: "Suivi multi-conditions", feat1_sub: "Asthme, hypertension et diabète réunis dans une seule app. Chaque condition garde ses propres mesures et son historique.",
+      feat2_title: "Zones et seuils colorés", feat2_sub: "Vert, jaune, rouge — selon votre DEP théorique, votre tension ou votre glycémie. Un regard suffit pour évaluer votre état du jour.",
       feat3_title: "Google Drive personnel", feat3_sub: "Vos données sont sauvegardées dans votre propre Drive. Ni serveur tiers, ni partage sans votre accord.",
       feat4_title: "Export PDF pour le médecin", feat4_sub: "Rapport complet de l'historique, prêt à imprimer ou à envoyer lors de votre prochain rendez-vous.",
       feat5_title: "Fonctionne hors ligne", feat5_sub: "Installez l'app une fois, utilisez-la sans connexion. La synchronisation se fait quand le réseau revient.",
       feat6_title: "Mode sombre & clair", feat6_sub: "Interface adaptée à vos préférences. Thème sauvegardé automatiquement entre les sessions.",
       metrics_eyebrow: "Mesures suivies",
-      m1_title: "💨 Débit expiratoire de pointe (DEP)", m1_sub: "Mesurez votre DEP en 3 souffles consécutifs. Comparez au fil du temps avec votre valeur théorique calculée selon votre profil.",
-      m2_title: "🩸 Oxymétrie de pouls (SpO₂)", m2_sub: "Suivez votre saturation en oxygène mesure par mesure. Alertes visuelles si la valeur sort des limites normales (70–100%).",
-      m3_title: "💊 Prises de traitement", m3_sub: "Enregistrez vos prises d'Easyhaler au quotidien de 0 à 5. Identifiez les jours de forte utilisation dans votre historique.",
-      m4_title: "📝 Commentaires libres", m4_sub: "Notez les symptômes, le contexte ou la météo à chaque mesure. Jusqu'à 500 caractères pour un suivi précis.",
+      m1_title: "💨 Asthme — DEP & SpO₂", m1_sub: "Mesurez votre DEP en 3 souffles consécutifs et votre SpO₂. Comparez au fil du temps avec votre valeur théorique calculée selon votre profil.",
+      m2_title: "🩺 Hypertension — Tension artérielle", m2_sub: "Enregistrez systolique, diastolique, pouls et position. Suivez l'évolution et repérez les valeurs hors seuils.",
+      m3_title: "🩸 Diabète — Glycémie", m3_sub: "Suivez votre glycémie en mg/dL ou mmol/L, avec contexte et insuline. Visualisez les tendances au fil du temps.",
+      m4_title: "💊 Traitements & notes", m4_sub: "Gérez vos médicaments par condition et ajoutez un commentaire à chaque mesure pour un suivi précis.",
       cta_title: "Prêt à reprendre le contrôle ?", cta_sub: "Gratuit. Sans compte. Fonctionne dans votre navigateur dès maintenant.",
       footer_copy: "Open source · Tourne entièrement dans votre navigateur · Aucune donnée envoyée sans votre accord",
       p1_txt: "Données sur votre Google Drive uniquement", p2_txt: "Aucun serveur tiers, aucun tracking", p3_txt: "Fonctionne hors ligne après installation", p4_txt: "Sans pub, gratuit",
-      hv_label: "Mesure du 15 juin — matin", hv_metric_label: "de votre DEP théorique · Zone verte",
+      hv_label: "Aujourd'hui — toutes conditions", hv_metric_label: "de votre DEP théorique · Zone verte",
       hv_blow1: "Souffle 1", hv_blow2: "Souffle 2", hv_blow3: "Souffle 3",
-      hv_spo2: "SpO₂", hv_status: "✓ Moyenne DEP : 438 L/min — stable depuis 7 jours"
+      hv_spo2: "SpO₂", hv_bp: "Tension", hv_glucose: "Glycémie",
+      hv_status: "✓ DEP 438 L/min · Tension 128/82 · Glycémie 1.05 g/L — stables depuis 7 jours"
     },
     en: {
       nav_home: "Home", nav_demo: "Demo", nav_privacy: "Privacy", nav_app: "Launch App",
       hero_eyebrow: "Asthma · Hypertension · Diabetes",
       hero_title: "Track what <em>really matters</em>",
-      hero_sub: "PEF, SpO₂, treatment doses — all in one view. Your data stays yours: saved to your Google Drive, never on our servers.",
+      hero_sub: "PEF, SpO₂, blood pressure, glucose and medications — all in one view. Your data stays yours: saved to your Google Drive, never on our servers.",
       how_eyebrow: "How it works",
-      step1_title: "Enter your measurements", step1_sub: "PEF in 3 blows, SpO₂, and Easyhaler doses. PEF average is calculated automatically.",
-      step2_title: "Visualize your progress", step2_sub: "Dashboard with trend charts. Identify difficult days at a glance.",
-      step3_title: "Compare to predicted PEF", step3_sub: "Enter your profile (age, sex, height). The app calculates your reference value and shows your daily zone.",
+      step1_title: "Enter your measurements", step1_sub: "PEF in 3 blows, SpO₂, blood pressure, glucose and medication doses. Averages are calculated automatically.",
+      step2_title: "Visualize your progress", step2_sub: "Dashboard with trend charts per condition. Identify difficult days at a glance.",
+      step3_title: "Compare to your reference values", step3_sub: "Enter your profile (age, sex, height). The app calculates your predicted PEF and shows zones and thresholds for each condition.",
       step4_title: "Export to PDF", step4_sub: "Generate a complete history report to share with your doctor.",
       feat_eyebrow: "What makes ChroniTracker different",
-      feat1_title: "PEF on 3 blows", feat1_sub: "Enter each blow individually. The best value and average are calculated in real-time.",
-      feat2_title: "Color-coded zones", feat2_sub: "Green, yellow, red — based on your predicted PEF. A quick glance evaluates your daily status.",
+      feat1_title: "Multi-condition tracking", feat1_sub: "Asthma, hypertension and diabetes in a single app. Each condition keeps its own measurements and history.",
+      feat2_title: "Color-coded zones", feat2_sub: "Green, yellow, red — based on your predicted PEF, blood pressure or glucose. A quick glance evaluates your daily status.",
       feat3_title: "Personal Google Drive", feat3_sub: "Your data is saved to your own Drive. No third-party servers, no sharing without your consent.",
       feat4_title: "PDF report for doctor", feat4_sub: "Complete history report, ready to print or email for your next appointment.",
       feat5_title: "Works offline", feat5_sub: "Install the app once, use it without connection. Sync happens when the network returns.",
       feat6_title: "Dark & light mode", feat6_sub: "Interface adapts to your preferences. Theme is saved automatically between sessions.",
       metrics_eyebrow: "Metrics tracked",
-      m1_title: "💨 Peak Expiratory Flow (PEF)", m1_sub: "Measure your PEF in 3 consecutive blows. Compare over time with your theoretical value calculated based on your profile.",
-      m2_title: "🩸 Pulse Oximetry (SpO₂)", m2_sub: "Track your oxygen saturation measurement by measurement. Visual alerts if the value falls outside normal limits (70–100%).",
-      m3_title: "💊 Treatment doses", m3_sub: "Log your daily Easyhaler doses from 0 to 5. Identify high-usage days in your history.",
-      m4_title: "📝 Free-form comments", m4_sub: "Note symptoms, context, or weather for each measure. Up to 500 characters for precise tracking.",
+      m1_title: "💨 Asthma — PEF & SpO₂", m1_sub: "Measure your PEF in 3 consecutive blows and your SpO₂. Compare over time with your theoretical value calculated based on your profile.",
+      m2_title: "🩺 Hypertension — Blood pressure", m2_sub: "Record systolic, diastolic, pulse and position. Track trends and spot values outside thresholds.",
+      m3_title: "🩸 Diabetes — Glucose", m3_sub: "Track your glucose in mg/dL or mmol/L, with context and insulin. Visualize trends over time.",
+      m4_title: "💊 Treatments & notes", m4_sub: "Manage medications by condition and add a comment to each measurement for precise tracking.",
       cta_title: "Ready to take control?", cta_sub: "Free. No account required. Works in your browser right now.",
       footer_copy: "Open source · Runs entirely in your browser · No data sent without your consent",
       p1_txt: "Data only on your Google Drive", p2_txt: "No third-party servers, no tracking", p3_txt: "Works offline after installation", p4_txt: "No ads, free",
-      hv_label: "Measurement of June 15 — morning", hv_metric_label: "of your predicted PEF · Green zone",
+      hv_label: "Today — all conditions", hv_metric_label: "of your predicted PEF · Green zone",
       hv_blow1: "Blow 1", hv_blow2: "Blow 2", hv_blow3: "Blow 3",
-      hv_spo2: "SpO₂", hv_status: "✓ Avg PEF: 438 L/min — stable for 7 days"
+      hv_spo2: "SpO₂", hv_bp: "Blood pressure", hv_glucose: "Glucose",
+      hv_status: "✓ PEF 438 L/min · BP 128/82 · Glucose 1.05 g/L — stable for 7 days"
     }
   };
 
