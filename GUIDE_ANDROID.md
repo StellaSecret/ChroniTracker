@@ -41,8 +41,8 @@ Ouvrir un terminal et exécuter :
 
 ```bash
 # Créer un dossier de projet
-mkdir asthmetrack
-cd asthmetrack
+mkdir chronitracker
+cd chronitracker
 
 # Initialiser npm
 npm init -y
@@ -51,7 +51,7 @@ npm init -y
 npm install @capacitor/core @capacitor/cli @capacitor/android
 
 # Initialiser Capacitor
-npx cap init ChroniTracker com.asthmetrack.app --web-dir www
+npx cap init ChroniTracker com.stellasecret.chronitracker --web-dir www
 ```
 
 ---
@@ -68,7 +68,7 @@ mkdir www
 
 Votre structure doit ressembler à :
 ```
-asthmetrack/
+chronitracker/
 ├── www/
 │   └── index.html
 ├── package.json
@@ -160,7 +160,7 @@ npx cap open android
 ## Structure finale du projet
 
 ```
-asthmetrack/
+chronitracker/
 ├── android/              ← Projet Android Studio
 │   └── app/
 │       └── build/outputs/apk/debug/

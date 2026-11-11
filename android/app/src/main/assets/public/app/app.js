@@ -21,7 +21,7 @@ function _pickDriveBackup(files) {
 const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 // Pure business logic (loaded from logic.js). DOM-free, unit-tested, mutation-tested.
-const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis, htnCategory, glucoseFlag, calcDepAvg: depAvg, driveBackupQuery, pickDriveBackup, migrateBackupData } = window.AsthmeTrackLogic;
+const { depZone, spo2Zone, predictedDEP, calcTrend, isCrisis, htnCategory, glucoseFlag, calcDepAvg: depAvg, driveBackupQuery, pickDriveBackup, migrateBackupData } = window.ChroniTrackLogic;
 
 
 // ══════════════════════════════════════════
