@@ -99,10 +99,16 @@ test.describe('Hypertension entry', () => {
       { id: 'drop', conditionId: 'diabetes', type: 'reading', timestamp: iso(2), data: { glucose: 90, unit: 'mg/dL' } },
     ]);
     await page.goto('/app/app.html');
+    // DB.load() resolves asynchronously after DOMContentLoaded; deleting before
+    // it finishes would filter the default empty list and overwrite the seed.
+    await page.waitForFunction(
+      () => ((window as any).DB?.conditionEntries || []).length === 2
+    );
     page.on('dialog', d => d.accept());
     await page.evaluate(() => (window as any).deleteConditionEntry('drop'));
-    const list = await entries(page);
-    expect(list.map((e) => e.id)).toEqual(['keep']);
+    await expect
+      .poll(async () => (await entries(page)).map((e) => e.id))
+      .toEqual(['keep']);
   });
 });
 
