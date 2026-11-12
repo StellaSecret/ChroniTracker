@@ -2368,25 +2368,57 @@ function addReminder(){
 }
 function toggleReminder(i){const rem=DB.reminders;rem[i].active=!rem[i].active;DB.reminders=rem;scheduleReminders();renderReminderList();if(currentPage==='dashboard')renderDashboard();}
 function deleteReminder(i){const rem=DB.reminders;rem.splice(i,1);DB.reminders=rem;scheduleReminders();renderReminderList();}
+// ── Rappels ─────────────────────────────────────────────────────────────
+// Sur Android (Capacitor) : les rappels sont programmés auprès du système
+// (AlarmManager via LocalNotifications) et se répètent chaque jour. Ils
+// continuent donc de sonner même si l'appli est fermée (y compris par la
+// fermeture automatique après inactivité). Sur le web : fallback setTimeout.
+const REMINDER_ID_BASE = 1000;
+let _nativeSchedChain = Promise.resolve();
+
+function scheduleNativeReminders(LN){
+  // Sérialise les appels pour éviter les courses cancel/schedule
+  _nativeSchedChain = _nativeSchedChain.then(async()=>{
+    try {
+      let perm = await LN.checkPermissions();
+      if (perm.display !== 'granted') perm = await LN.requestPermissions();
+      if (perm.display !== 'granted') return;
+
+      const pending = await LN.getPending();
+      if (pending.notifications && pending.notifications.length) {
+        await LN.cancel({ notifications: pending.notifications.map(n => ({ id: n.id })) });
+      }
+
+      const notifications = [];
+      DB.reminders.forEach((r, i) => {
+        if (!r.active) return;
+        const [h, m] = r.time.split(':').map(Number);
+        notifications.push({
+          id: REMINDER_ID_BASE + i,
+          title: 'ChroniTracker 💊',
+          body: r.label + ' — Penser à votre Easyhaler !',
+          schedule: { on: { hour: h, minute: m }, allowWhileIdle: true }
+        });
+      });
+      if (notifications.length) await LN.schedule({ notifications });
+    } catch(e){ console.warn('Notification schedule error:', e); }
+  });
+  return _nativeSchedChain;
+}
+
 function scheduleReminders(){
+  const LN = IS_CAPACITOR && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+  if (LN) { scheduleNativeReminders(LN); return; }
+
+  // Fallback web (navigateur / tests)
   reminderTimers.forEach(t=>clearTimeout(t));reminderTimers=[];
   const now=new Date();
   DB.reminders.filter(r=>r.active).forEach(r=>{
     const[h,m]=r.time.split(':').map(Number),target=new Date(now);
     target.setHours(h,m,0,0);if(target<=now)target.setDate(target.getDate()+1);
-    const t=setTimeout(async()=>{
+    const t=setTimeout(()=>{
       try {
-        // Sur Android Capacitor : utilise le plugin Local Notifications
-        if(IS_CAPACITOR && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications){
-          const LN = window.Capacitor.Plugins.LocalNotifications;
-          await LN.schedule({notifications:[{
-            title:'ChroniTracker 💊',
-            body: r.label+' — Penser à votre Easyhaler !',
-            id: Math.floor(secureRandom()*100000),
-            schedule:{ at: new Date(Date.now()+100) }
-          }]});
-        } else if(typeof Notification !== 'undefined' && Notification.permission==='granted'){
-          // Fallback web
+        if(typeof Notification !== 'undefined' && Notification.permission==='granted'){
           new Notification('ChroniTracker 💊',{body:r.label+' — Penser à votre traitement !'});
         }
       } catch(e){ console.warn('Notification error:', e); }
@@ -2618,10 +2650,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (!IS_CAPACITOR && typeof Notification !== 'undefined' && Notification.permission === 'default') {
     Notification.requestPermission();
   }
-  if (IS_CAPACITOR && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
-    window.Capacitor.Plugins.LocalNotifications.requestPermissions().catch(function(){});
-  }
-  scheduleReminders(); // Les rappels utilisent le plugin natif
+  scheduleReminders(); // Demande la permission si besoin, puis programme les rappels natifs
   // Add medication functions
   if(typeof window.addMedication==='undefined'){
     window.addMedication = function(){
