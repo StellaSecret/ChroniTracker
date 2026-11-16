@@ -54,7 +54,7 @@
     "ast-v8-to-istanbul": "^1.0.8",
     "husky": "^9.0.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.6",
+    "vite": "^8.3.8",
     "vitest": "^5.0.0"
   }
 }
